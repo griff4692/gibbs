@@ -62,7 +62,7 @@ def resample_assignments(args, X, components, z, argmax=False):
 
 def run_validation_tests(args, dev_X, dev_y):
     dev_z = np.random.random_integers(0, high=args.C - 1, size=(dev_X.shape[0], ))
-    resample_assignments(args, dev_X, components, dev_z)
+    resample_assignments(args, dev_X, components, dev_z, argmax=True)
     dev_log_joint = calculate_log_joint(args, dev_X, dev_z, components) / float(dev_X.shape[0])
     print('Validation Log Joint: {}'.format(dev_log_joint))
     print('Validation Accuracy: {}'.format(accuracy(dev_z, dev_y)))
