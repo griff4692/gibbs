@@ -38,12 +38,12 @@ def calculate_log_joint(args, X, z, components, thetas):
     return log_joint
 
 
-def calculate_log_posterior_predictive(X, components, thetas):
+def calculate_log_likelihood(X, components, thetas):
     """
     :param X: Vote Data
-    :param components: Posterior sample of Beta^hat
-    :param thetas: Posterior sample of theta^hat
-    :return: Log Posterior Predictive
+    :param components: Posterior sample of Beta^hat (from MCMC)
+    :param thetas: Posterior sample of theta^hat (from MCMC)
+    :return: Log Likelihood of Held out Data
     """
     log_pp = 0.0
     for n in range(X.shape[0]):
@@ -90,9 +90,9 @@ def run_validation_tests(args, dev_X, dev_y, components, thetas):
     dev_z = np.random.random_integers(0, high=args.C - 1, size=(dev_X.shape[0], ))
     resample_assignments(args, dev_X, components, dev_z, argmax=True)
     dev_log_joint = calculate_log_joint(args, dev_X, dev_z, components, thetas) / float(dev_X.shape[0])
-    dev_log_posterior_predictive = calculate_log_posterior_predictive(dev_X, components, thetas) / float(dev_X.shape[0])
+    dev_log_likelihood = calculate_log_likelihood(dev_X, components, thetas) / float(dev_X.shape[0])
     print('Validation Log Joint: {}'.format(dev_log_joint))
-    print('Approximation to Posterior Predictive: {}'.format(dev_log_posterior_predictive))
+    print('Validation Log Likelihood: {}'.format(dev_log_likelihood))
     print('Validation Accuracy: {}'.format(accuracy(dev_z, dev_y)))
     dev_republicans = len([d for d in dev_y if d == 'R'])
     dev_democrats = len([d for d in dev_y if d == 'D'])
@@ -117,7 +117,7 @@ def train_dev_splits(x, y, train_fract=0.8):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--C', type=float, default=2)
+    parser.add_argument('--C', type=int, default=2)
     parser.add_argument('--component_alpha', type=float, default=1.0)
     parser.add_argument('--component_beta', type=float, default=1.0)
     parser.add_argument('--data_dir', default='~/Desktop')
